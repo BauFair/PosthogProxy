@@ -1,21 +1,24 @@
 hi.baufer.beauty {
+
+  # Preflight for /i/v0/e, /batch, etc.
   @options method OPTIONS
   handle @options {
     header Access-Control-Allow-Origin "https://hello.baufer.beauty"
     header Access-Control-Allow-Methods "GET, POST, OPTIONS"
     header Access-Control-Allow-Headers "*"
+    header Access-Control-Allow-Credentials "true"
     respond 204
-  }
-
-  header {
-    Access-Control-Allow-Origin "https://hello.baufer.beauty"
-    Access-Control-Allow-Methods "GET, POST, OPTIONS"
-    Access-Control-Allow-Headers "*"
   }
 
   handle /static/* {
     reverse_proxy https://us-assets.i.posthog.com:443 {
       header_up Host us-assets.i.posthog.com
+
+      # Ensure the browser can load the SDK from hello.baufer.beauty
+      header_down Access-Control-Allow-Origin "https://hello.baufer.beauty"
+      header_down Access-Control-Allow-Credentials "true"
+
+      # Optional: avoid conflicting upstream headers
       header_down -Access-Control-Allow-Origin
     }
   }
@@ -23,6 +26,10 @@ hi.baufer.beauty {
   handle {
     reverse_proxy https://us.i.posthog.com:443 {
       header_up Host us.i.posthog.com
+
+      header_down Access-Control-Allow-Origin "https://hello.baufer.beauty"
+      header_down Access-Control-Allow-Credentials "true"
+
       header_down -Access-Control-Allow-Origin
     }
   }
