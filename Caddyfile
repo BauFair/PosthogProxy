@@ -1,12 +1,13 @@
 :80
 
-handle /ingest/* {
+route /ingest/* {
+    uri strip_prefix /ingest
     reverse_proxy https://us.i.posthog.com {
         header_up Host us.i.posthog.com
         header_up X-Forwarded-For {remote_host}
     }
 }
 
-handle {
+route {
     respond "Analytics proxy running" 200
 }
