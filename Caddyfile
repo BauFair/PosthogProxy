@@ -1,29 +1,26 @@
 {
-	# If Coolify terminates TLS in front and speaks plain HTTP to this container:
-	# auto_https off
+    # This stops the 308 redirect loops
+    auto_https off
 }
 
-hi.baufer.beauty {
-	route {
-		# Static SDK assets (PostHog recommends the region assets domain)
-		handle_path /ingest/static/* {
-			reverse_proxy https://us-assets.i.posthog.com {
-				header_up Host us-assets.i.posthog.com
-				header_down -Access-Control-Allow-Origin
-			}
-		}
+# Listen ONLY on port 80 internally
+:80 {
+    # CORS headers for the landing page
+    header Access-Control-Allow-Origin "https://hello.baufer.beauty"
+    header Access-Control-Allow-Methods "GET, POST, OPTIONS"
+    header Access-Control-Allow-Headers "*"
 
-		# Everything else (event capture, decide, etc.)
-		handle_path /ingest/* {
-			reverse_proxy https://us.i.posthog.com {
-				header_up Host us.i.posthog.com
-				header_down -Access-Control-Allow-Origin
-			}
-		}
+    # 1. Static Assets
+    handle /static/* {
+        reverse_proxy https://us-assets.i.posthog.com {
+            header_up Host us-assets.i.posthog.com
+        }
+    }
 
-		# Fallback only if nothing above matched
-		handle {
-			respond "Analytics proxy running" 200
-		}
-	}
+    # 2. Everything else (Capture/Decide)
+    handle {
+        reverse_proxy https://us.i.posthog.com {
+            header_up Host us.i.posthog.com
+        }
+    }
 }
