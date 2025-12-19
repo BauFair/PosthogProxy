@@ -1,14 +1,18 @@
 :80
 
-# Handle requests starting with /ingest/
+# 1. Match requests starting with /ingest/ AND strip that prefix
 handle_path /ingest/* {
+    # 2. Forward to PostHog Cloud (US)
     reverse_proxy https://us.i.posthog.com {
+        # 3. Required headers for PostHog to accept the request
         header_up Host us.i.posthog.com
+        header_up X-Real-IP {remote_host}
         header_up X-Forwarded-For {remote_host}
+        header_up X-Forwarded-Proto {scheme}
     }
 }
 
-# Fallback for everything else
+# 4. Fallback for root or other paths (verification that proxy is up)
 handle {
     respond "Analytics proxy running" 200
 }
