@@ -1,8 +1,8 @@
-hi.baufer.beauty {
-  handle /__health {
-    respond "ok" 200
-  }
+{
+  auto_https off
+}
 
+:80 {
   handle /static/* {
     reverse_proxy https://us-assets.i.posthog.com:443 {
       header_up Host us-assets.i.posthog.com
