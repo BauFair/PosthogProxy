@@ -3,18 +3,6 @@
 }
 
 :80 {
-    @options method OPTIONS
-    handle @options {
-        header Access-Control-Allow-Origin "https://hello.baufer.beauty"
-        header Access-Control-Allow-Methods "GET, POST, OPTIONS"
-        header Access-Control-Allow-Headers "*"
-        respond 204
-    }
-
-    header Access-Control-Allow-Origin "https://hello.baufer.beauty"
-    header Access-Control-Allow-Methods "GET, POST, OPTIONS"
-    header Access-Control-Allow-Headers "*"
-
     handle /static/* {
         reverse_proxy https://us-assets.i.posthog.com {
             header_up Host us-assets.i.posthog.com
