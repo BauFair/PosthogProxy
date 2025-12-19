@@ -1,23 +1,26 @@
 {
-    # This stops the 308 redirect loops
     auto_https off
 }
 
-# Listen ONLY on port 80 internally
 :80 {
-    # CORS headers for the landing page
+    @options method OPTIONS
+    handle @options {
+        header Access-Control-Allow-Origin "https://hello.baufer.beauty"
+        header Access-Control-Allow-Methods "GET, POST, OPTIONS"
+        header Access-Control-Allow-Headers "*"
+        respond 204
+    }
+
     header Access-Control-Allow-Origin "https://hello.baufer.beauty"
     header Access-Control-Allow-Methods "GET, POST, OPTIONS"
     header Access-Control-Allow-Headers "*"
 
-    # 1. Static Assets
     handle /static/* {
         reverse_proxy https://us-assets.i.posthog.com {
             header_up Host us-assets.i.posthog.com
         }
     }
 
-    # 2. Everything else (Capture/Decide)
     handle {
         reverse_proxy https://us.i.posthog.com {
             header_up Host us.i.posthog.com
