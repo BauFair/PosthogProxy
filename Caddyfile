@@ -1,0 +1,12 @@
+:80
+
+handle /ingest/* {
+    reverse_proxy https://us.i.posthog.com {
+        header_up Host us.i.posthog.com
+        header_up X-Forwarded-For {remote_host}
+    }
+}
+
+handle {
+    respond "Analytics proxy running" 200
+}
