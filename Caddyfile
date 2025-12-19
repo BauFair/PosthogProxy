@@ -1,4 +1,5 @@
 hi.baufer.beauty {
+
   @options method OPTIONS
   handle @options {
     header Access-Control-Allow-Origin "https://hello.baufer.beauty"
@@ -9,22 +10,25 @@ hi.baufer.beauty {
   }
 
   handle /static/* {
+    header {
+      Access-Control-Allow-Origin "https://hello.baufer.beauty"
+      Vary "Origin"
+    }
+
     reverse_proxy https://us-assets.i.posthog.com:443 {
       header_up Host us-assets.i.posthog.com
-
-      header_down -Access-Control-Allow-Origin
-      header_down Access-Control-Allow-Origin "https://hello.baufer.beauty"
-      header_down Access-Control-Allow-Credentials "true"
     }
   }
 
   handle {
+    header {
+      Access-Control-Allow-Origin "https://hello.baufer.beauty"
+      Access-Control-Allow-Credentials "true"
+      Vary "Origin"
+    }
+
     reverse_proxy https://us.i.posthog.com:443 {
       header_up Host us.i.posthog.com
-
-      header_down -Access-Control-Allow-Origin
-      header_down Access-Control-Allow-Origin "https://hello.baufer.beauty"
-      header_down Access-Control-Allow-Credentials "true"
     }
   }
 }
